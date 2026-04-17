@@ -1,0 +1,157 @@
+{
+  "date": "2026-04-17",
+  "updatedAt": "2026-04-17 08:00 KST",
+  "usMarket": [
+    {
+      "name": "S&P 500",
+      "value": 7041.28,
+      "change": 18.14,
+      "changePct": 0.26,
+      "note": "🏆 역대 최고가 신규 경신 · 7,000선 돌파"
+    },
+    {
+      "name": "NASDAQ",
+      "value": 24102.70,
+      "change": 86.69,
+      "changePct": 0.36,
+      "note": "🔥 12연속 상승 · 2009년 이후 최장 연승"
+    },
+    {
+      "name": "DOW JONES",
+      "value": 48578.72,
+      "change": 115.00,
+      "changePct": 0.24,
+      "note": "전쟁 이전 수준 회복 근접"
+    }
+  ],
+  "macro": [
+    {
+      "name": "10Y 국채수익률",
+      "value": "4.313%",
+      "change": 0.034,
+      "changeText": "+3.4bps",
+      "note": "Fed 금리인하 기대 후퇴"
+    },
+    {
+      "name": "WTI 원유",
+      "value": "$93.2",
+      "change": 1.9,
+      "changeText": "+2.08%",
+      "note": "이란전쟁 휴전 협상 진행 중"
+    },
+    {
+      "name": "신규 실업급여",
+      "value": "207K",
+      "change": -11,
+      "changeText": "▼ -11K (예상하회)",
+      "note": "노동시장 견조 · 저실업 지속"
+    }
+  ],
+  "sectors": [
+    { "name": "에너지",      "pct":  1.85 },
+    { "name": "소재",        "pct":  1.42 },
+    { "name": "부동산",      "pct":  1.21 },
+    { "name": "IT / 반도체", "pct":  0.93 },
+    { "name": "금융",        "pct":  0.72 },
+    { "name": "헬스케어",    "pct": -0.38 },
+    { "name": "소비재(임의)","pct": -0.52 },
+    { "name": "Netflix(AH)", "pct":-10.00 }
+  ],
+  "recommendation": {
+    "ticker": "000660",
+    "nameKr": "SK하이닉스",
+    "nameEn": "SK Hynix",
+    "confidence": 82,
+    "entryPrice": 1151000,
+    "targetPrice": 1265000,
+    "stopPrice": 1080000,
+    "description": "글로벌 AI 인프라의 핵심 부품인 HBM(고대역폭메모리) 시장 점유율 50% 이상 보유. NVIDIA, Google, Amazon 등 빅테크의 AI 서버에 필수 공급. 2025년 순이익 +530%, 2026년 추가 성장 전망. 4/23 실적 발표 예정으로 촉매 이벤트 임박.",
+    "reasons": [
+      "NASDAQ 12연속 상승 — AI·반도체 수요 전 세계 확인",
+      "Nvidia·Microsoft 강세 → SK하이닉스 HBM 수요 직결",
+      "KOSPI 4/16 +2.21% 상승, SK하이닉스 당일 +1.32%",
+      "4/23 실적 발표 → 어닝 서프라이즈 기대 (전분기比 +21%)",
+      "36개 분석사 Strong Buy · 평균 목표가 1,385,000원",
+      "52주 저가 대비 +570% — 아직 상방 여력 존재"
+    ],
+    "usImpact": [
+      { "label": "AI 수요 연동",    "score": 9.2 },
+      { "label": "NASDAQ 모멘텀",   "score": 8.8 },
+      { "label": "이란 휴전 기대",  "score": 7.5 },
+      { "label": "유가 안정화",     "score": 6.8 },
+      { "label": "달러 강세 리스크","score": -4.0 }
+    ],
+    "risks": [
+      "이란-미국 휴전 협상 결렬 시 유가 급등 → KOSPI 하락",
+      "Google TurboQuant AI 효율화 → HBM 수요 우려 재부각",
+      "중국 메모리 경쟁사 캐패시티 증설 리스크",
+      "달러 강세 지속 시 원화 약세 → 수출 이익 희석",
+      "실적 발표 후 '사실에 팔자' 차익실현 가능성"
+    ],
+    "mitigation": [
+      "분할 매수: 1/3씩 3회 진입 (오늘 / 4/21 / 4/22)",
+      "실적 발표(4/23) 전일까지 포지션 1/2 정리 고려",
+      "1,080,000원 이탈 시 즉시 손절, 감정 배제",
+      "전체 포트폴리오의 최대 10% 이내 비중 유지",
+      "이란 뉴스 모니터링 — 휴전 연장 확정 시 목표가 상향"
+    ],
+    "catalysts": [
+      { "date": "4/17 오늘", "text": "국내 증시 개장 — 미장 강세 후행 반영 기대. 장초반 매수 기회 포착" },
+      { "date": "4/22 화",   "text": "미-이란 휴전 만료일 → 연장 협상 결과 발표 예정" },
+      { "date": "4/23 수",   "text": "SK하이닉스 1Q26 실적 발표 🔥 전분기 순이익 15.2조원. HBM 수요 가이던스 핵심" },
+      { "date": "4월 말",    "text": "NVIDIA 실적 발표 예정. SK하이닉스 HBM3E 수요 전망 재확인 트리거" }
+    ]
+  },
+  "history": [
+    {
+      "date": "2026-04-17",
+      "name": "SK하이닉스",
+      "ticker": "000660",
+      "entryPrice": 1151000,
+      "targetPrice": 1265000,
+      "currentPrice": null,
+      "returnPct": null,
+      "status": "active"
+    },
+    {
+      "date": "2026-04-16",
+      "name": "삼성전자",
+      "ticker": "005930",
+      "entryPrice": 98400,
+      "targetPrice": 107000,
+      "currentPrice": 104200,
+      "returnPct": 5.9,
+      "status": "active"
+    },
+    {
+      "date": "2026-04-15",
+      "name": "현대차",
+      "ticker": "005380",
+      "entryPrice": 286000,
+      "targetPrice": 314000,
+      "currentPrice": 316500,
+      "returnPct": 10.7,
+      "status": "hit"
+    },
+    {
+      "date": "2026-04-14",
+      "name": "HD현대중공업",
+      "ticker": "329180",
+      "entryPrice": 312000,
+      "targetPrice": 342000,
+      "currentPrice": 338000,
+      "returnPct": 8.3,
+      "status": "active"
+    },
+    {
+      "date": "2026-04-11",
+      "name": "한화에어로",
+      "ticker": "012450",
+      "entryPrice": 198000,
+      "targetPrice": 218000,
+      "currentPrice": 185000,
+      "returnPct": -6.6,
+      "status": "stop"
+    }
+  ]
+}

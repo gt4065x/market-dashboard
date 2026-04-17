@@ -1,0 +1,133 @@
+{
+  "name": "미장분석 Daily Stock Recommendation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "cron",
+      "name": "⏰ 매일 오전 8시 (평일)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/YOUR_USERNAME/market-dashboard/contents/data.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "token YOUR_GITHUB_PAT" },
+            { "name": "User-Agent",    "value": "n8n-market-bot" },
+            { "name": "Accept",        "value": "application/vnd.github.v3+json" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-sha",
+      "name": "📥 GitHub SHA 조회",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 300],
+      "notes": "기존 data.json의 SHA와 history를 가져옵니다"
+    },
+    {
+      "parameters": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "anthropic-version", "value": "2023-06-01" },
+            { "name": "content-type",      "value": "application/json" },
+            { "name": "x-api-key",         "value": "YOUR_ANTHROPIC_API_KEY" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=",
+              "value": "={{ JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 4000, messages: [{ role: 'user', content: '오늘 날짜: ' + new Date().toISOString().split('T')[0] + '\\n\\n당신은 전문 주식 분석가입니다. 간밤 미국 증시와 글로벌 매크로를 분석하여 오늘 국내 주식 1종목을 추천해주세요.\\n\\n반드시 아래 JSON 형식으로만 응답하세요 (다른 텍스트 없이 순수 JSON만):\\n{\\n  \"date\": \"YYYY-MM-DD\",\\n  \"updatedAt\": \"YYYY-MM-DD HH:MM KST\",\\n  \"usMarket\": [\\n    {\"name\": \"S&P 500\", \"value\": 숫자, \"change\": 숫자, \"changePct\": 숫자, \"note\": \"설명\"},\\n    {\"name\": \"NASDAQ\", \"value\": 숫자, \"change\": 숫자, \"changePct\": 숫자, \"note\": \"설명\"},\\n    {\"name\": \"DOW JONES\", \"value\": 숫자, \"change\": 숫자, \"changePct\": 숫자, \"note\": \"설명\"}\\n  ],\\n  \"macro\": [\\n    {\"name\": \"10Y 국채수익률\", \"value\": \"X.XXX%\", \"change\": 숫자, \"changeText\": \"설명\", \"note\": \"설명\"},\\n    {\"name\": \"WTI 원유\", \"value\": \"$XX.X\", \"change\": 숫자, \"changeText\": \"설명\", \"note\": \"설명\"},\\n    {\"name\": \"신규 실업급여\", \"value\": \"XXXk\", \"change\": 숫자, \"changeText\": \"설명\", \"note\": \"설명\"}\\n  ],\\n  \"sectors\": [\\n    {\"name\": \"에너지\", \"pct\": 숫자},\\n    {\"name\": \"IT/반도체\", \"pct\": 숫자},\\n    {\"name\": \"금융\", \"pct\": 숫자},\\n    {\"name\": \"헬스케어\", \"pct\": 숫자},\\n    {\"name\": \"소비재(임의)\", \"pct\": 숫자},\\n    {\"name\": \"소재\", \"pct\": 숫자},\\n    {\"name\": \"부동산\", \"pct\": 숫자},\\n    {\"name\": \"유틸리티\", \"pct\": 숫자}\\n  ],\\n  \"recommendation\": {\\n    \"ticker\": \"종목코드(6자리)\",\\n    \"nameKr\": \"한글명\",\\n    \"nameEn\": \"영문명\",\\n    \"confidence\": 숫자(0-100),\\n    \"entryPrice\": 숫자,\\n    \"targetPrice\": 숫자,\\n    \"stopPrice\": 숫자,\\n    \"description\": \"종목 설명 2-3문장\",\\n    \"reasons\": [\"이유1\", \"이유2\", \"이유3\", \"이유4\", \"이유5\"],\\n    \"usImpact\": [{\"label\": \"항목명\", \"score\": 숫자(-10~10)}],\\n    \"risks\": [\"위험1\", \"위험2\", \"위험3\"],\\n    \"mitigation\": [\"전략1\", \"전략2\", \"전략3\"],\\n    \"catalysts\": [{\"date\": \"날짜\", \"text\": \"내용\"}]\\n  },\\n  \"history\": []\\n}' }] }) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "claude-analysis",
+      "name": "🤖 Claude AI 미장 분석",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ── 1. Claude 응답 파싱 ──────────────────────────────\nconst claudeResponse = $input.first().json;\nlet content = '';\n\nif (claudeResponse.content && claudeResponse.content[0]) {\n  content = claudeResponse.content[0].text;\n} else {\n  throw new Error('Claude 응답 없음: ' + JSON.stringify(claudeResponse));\n}\n\n// 마크다운 코드블록 제거 후 JSON 파싱\ncontent = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n\nlet parsed;\ntry {\n  parsed = JSON.parse(content);\n} catch(e) {\n  throw new Error('JSON 파싱 실패. Claude 응답: ' + content.substring(0, 300));\n}\n\n// ── 2. 오늘 날짜 보정 (KST) ──────────────────────────\nconst now = new Date();\nconst kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);\nparsed.date = kst.toISOString().split('T')[0];\nparsed.updatedAt = kst.toISOString().replace('T', ' ').substring(0, 16) + ' KST';\n\n// ── 3. 기존 history 가져오기 (GitHub GET 노드에서) ────\nlet existingHistory = [];\ntry {\n  const getResult = $('📥 GitHub SHA 조회').first().json;\n  if (getResult.content) {\n    const decoded = Buffer.from(getResult.content, 'base64').toString('utf8');\n    const existingData = JSON.parse(decoded);\n    existingHistory = existingData.history || [];\n  }\n} catch(e) {\n  // 첫 실행이거나 파싱 실패 시 빈 배열로 시작\n  existingHistory = [];\n}\n\n// ── 4. 오늘 추천을 history에 추가 ────────────────────\nif (parsed.recommendation) {\n  const todayEntry = {\n    date: parsed.date,\n    name: parsed.recommendation.nameKr,\n    ticker: parsed.recommendation.ticker,\n    entryPrice: parsed.recommendation.entryPrice,\n    targetPrice: parsed.recommendation.targetPrice,\n    currentPrice: null,\n    returnPct: null,\n    status: 'active'\n  };\n  \n  // 같은 날짜가 이미 있으면 교체 (재실행 대비)\n  existingHistory = existingHistory.filter(h => h.date !== parsed.date);\n  existingHistory.unshift(todayEntry);\n  existingHistory = existingHistory.slice(0, 10); // 최근 10개 유지\n}\n\nparsed.history = existingHistory;\n\nreturn [{ json: parsed }];"
+      },
+      "id": "parse-json",
+      "name": "🔧 JSON 파싱 & 기록 병합",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/YOUR_USERNAME/market-dashboard/contents/data.json",
+        "method": "PUT",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "token YOUR_GITHUB_PAT" },
+            { "name": "Content-Type",  "value": "application/json" },
+            { "name": "User-Agent",    "value": "n8n-market-bot" },
+            { "name": "Accept",        "value": "application/vnd.github.v3+json" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=",
+              "value": "={{ JSON.stringify({ message: '🤖 Daily update: ' + $json.date, content: Buffer.from(JSON.stringify($json, null, 2)).toString('base64'), sha: $('📥 GitHub SHA 조회').first().json.sha }) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "github-put",
+      "name": "📤 GitHub data.json 업로드",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1200, 300]
+    }
+  ],
+  "connections": {
+    "⏰ 매일 오전 8시 (평일)": {
+      "main": [[{ "node": "📥 GitHub SHA 조회", "type": "main", "index": 0 }]]
+    },
+    "📥 GitHub SHA 조회": {
+      "main": [[{ "node": "🤖 Claude AI 미장 분석", "type": "main", "index": 0 }]]
+    },
+    "🤖 Claude AI 미장 분석": {
+      "main": [[{ "node": "🔧 JSON 파싱 & 기록 병합", "type": "main", "index": 0 }]]
+    },
+    "🔧 JSON 파싱 & 기록 병합": {
+      "main": [[{ "node": "📤 GitHub data.json 업로드", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

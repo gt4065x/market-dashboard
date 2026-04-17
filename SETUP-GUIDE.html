@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>미장 분석 시스템 설치 가이드</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; background: #f6f8fa; color: #24292f; line-height: 1.7; }
+  h1 { font-size: 1.8rem; margin-bottom: 6px; }
+  h2 { font-size: 1.2rem; margin: 32px 0 12px; padding: 8px 14px; background: #0d1117; color: #00d4ff; border-radius: 8px; font-family: monospace; letter-spacing: 1px; }
+  h3 { font-size: 1rem; margin: 20px 0 8px; color: #0550ae; }
+  .step { background: white; border: 1px solid #d0d7de; border-radius: 10px; padding: 20px 24px; margin-bottom: 20px; position: relative; }
+  .step-num { position: absolute; top: -12px; left: 16px; background: #0d1117; color: #00d4ff; font-family: monospace; font-weight: 700; font-size: 0.8rem; padding: 3px 10px; border-radius: 20px; letter-spacing: 1px; }
+  code { background: #eaf0f6; padding: 2px 7px; border-radius: 4px; font-family: monospace; font-size: 0.88em; color: #cf222e; }
+  pre { background: #0d1117; color: #e6edf3; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; line-height: 1.6; margin: 10px 0; }
+  pre .comment { color: #8b949e; }
+  pre .key { color: #79c0ff; }
+  pre .val { color: #a5d6ff; }
+  .warn { background: #fff8c5; border-left: 4px solid #d29922; padding: 10px 14px; border-radius: 4px; font-size: 0.88rem; margin: 10px 0; }
+  .tip  { background: #dafbe1; border-left: 4px solid #2da44e; padding: 10px 14px; border-radius: 4px; font-size: 0.88rem; margin: 10px 0; }
+  .tag  { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; margin-right: 6px; }
+  .free { background: #dafbe1; color: #1a7f37; }
+  .easy{ background: #ddf4ff; color: #0550ae; }
+  .auto{ background: #fff3cd; color: #856404; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+  th { background: #f6f8fa; padding: 8px 12px; text-align: left; border: 1px solid #d0d7de; font-size: 0.85rem; }
+  td { padding: 8px 12px; border: 1px solid #d0d7de; font-size: 0.85rem; }
+  .arch { background: #0d1117; color: #e6edf3; border-radius: 12px; padding: 20px 24px; margin: 16px 0; font-family: monospace; font-size: 0.85rem; line-height: 2; }
+  .arch .arrow { color: #00d4ff; }
+  .arch .box { color: #7ee787; }
+  .arch .note { color: #8b949e; font-size: 0.75rem; }
+</style>
+</head>
+<body>
+
+<h1>📈 미장 분석 & 국내 주식 추천 시스템</h1>
+<p style="color:#57606a;margin-bottom:8px">완전 자동화 구축 가이드 · GitHub Pages + n8n</p>
+<p>
+  <span class="tag free">무료 호스팅</span>
+  <span class="tag easy">코딩 불필요</span>
+  <span class="tag auto">매일 자동 업데이트</span>
+</p>
+
+<!-- Architecture -->
+<div class="arch">
+  <div><span class="box">⏰ n8n 스케줄러</span> <span style="color:#8b949e">(매일 오전 8시)</span></div>
+  <div>&nbsp;&nbsp;&nbsp;<span class="arrow">↓</span></div>
+  <div><span class="box">🤖 Claude API</span> <span style="color:#8b949e">(미장 분석 + 종목 추천 생성)</span></div>
+  <div>&nbsp;&nbsp;&nbsp;<span class="arrow">↓</span></div>
+  <div><span class="box">📄 data.json</span> <span style="color:#8b949e">(GitHub Repository에 자동 업로드)</span></div>
+  <div>&nbsp;&nbsp;&nbsp;<span class="arrow">↓</span></div>
+  <div><span class="box">🌐 GitHub Pages</span> <span style="color:#8b949e">(index.html이 data.json을 읽어 화면 표시)</span></div>
+</div>
+
+<h2>STEP 1 · GitHub 저장소 만들기</h2>
+<div class="step">
+  <div class="step-num">STEP 01</div>
+  <h3>① GitHub.com 접속 후 새 저장소 생성</h3>
+  <ol style="padding-left:20px;font-size:.9rem">
+    <li>github.com 로그인 → 우측 상단 <code>+</code> → <code>New repository</code></li>
+    <li>Repository name: <code>market-dashboard</code></li>
+    <li>✅ <strong>Public</strong> 선택 (GitHub Pages 무료 사용)</li>
+    <li>✅ <strong>Add a README file</strong> 체크</li>
+    <li><code>Create repository</code> 클릭</li>
+  </ol>
+  
+  <h3>② 파일 2개 업로드</h3>
+  <p style="font-size:.9rem">저장소 페이지에서 <code>Add file</code> → <code>Upload files</code></p>
+  <table>
+    <tr><th>파일명</th><th>내용</th></tr>
+    <tr><td><code>index.html</code></td><td>대시보드 웹페이지</td></tr>
+    <tr><td><code>data.json</code></td><td>초기 데이터 (n8n이 매일 덮어씀)</td></tr>
+  </table>
+  <div class="tip">💡 위 가이드와 함께 제공된 index.html, data.json 파일을 그대로 업로드하세요.</div>
+</div>
+
+<h2>STEP 2 · GitHub Pages 활성화</h2>
+<div class="step">
+  <div class="step-num">STEP 02</div>
+  <ol style="padding-left:20px;font-size:.9rem">
+    <li>저장소 → <code>Settings</code> 탭</li>
+    <li>왼쪽 메뉴 → <code>Pages</code></li>
+    <li>Source: <strong>Deploy from a branch</strong></li>
+    <li>Branch: <strong>main</strong> / <strong>/ (root)</strong> 선택</li>
+    <li><code>Save</code> 클릭</li>
+    <li>약 1~2분 후 URL 확인: <code>https://YOUR_USERNAME.github.io/market-dashboard</code></li>
+  </ol>
+  <div class="warn">⚠️ YOUR_USERNAME을 본인 GitHub 아이디로 변경하세요.</div>
+</div>
+
+<h2>STEP 3 · GitHub Personal Access Token 발급</h2>
+<div class="step">
+  <div class="step-num">STEP 03</div>
+  <p style="font-size:.9rem">n8n이 data.json을 자동으로 업데이트하려면 GitHub API 인증이 필요합니다.</p>
+  <ol style="padding-left:20px;font-size:.9rem">
+    <li>GitHub → 우측 상단 프로필 → <code>Settings</code></li>
+    <li>왼쪽 하단 <code>Developer settings</code></li>
+    <li><code>Personal access tokens</code> → <code>Tokens (classic)</code></li>
+    <li><code>Generate new token (classic)</code></li>
+    <li>Note: <code>market-dashboard-bot</code></li>
+    <li>Expiration: <strong>No expiration</strong></li>
+    <li>Scopes: ✅ <strong>repo</strong> 체크</li>
+    <li><code>Generate token</code> → 토큰 복사 (다시 볼 수 없음!)</li>
+  </ol>
+  <div class="warn">⚠️ 토큰은 반드시 어딘가에 저장해두세요. 페이지를 벗어나면 다시 볼 수 없습니다.</div>
+</div>
+
+<h2>STEP 4 · n8n 워크플로우 설정 (Zeabur)</h2>
+<div class="step">
+  <div class="step-num">STEP 04</div>
+  <h3>① n8n 접속</h3>
+  <p style="font-size:.9rem">Zeabur에서 실행 중인 n8n 인스턴스 접속 (기존 URL 사용)</p>
+  
+  <h3>② 워크플로우 import</h3>
+  <ol style="padding-left:20px;font-size:.9rem">
+    <li>n8n 좌측 메뉴 → <code>Workflows</code> → <code>Add Workflow</code></li>
+    <li>우측 상단 메뉴(⋮) → <code>Import from file</code></li>
+    <li>제공된 <code>n8n-workflow.json</code> 파일 선택</li>
+  </ol>
+
+  <h3>③ 노드별 설정</h3>
+  
+  <p><strong>🤖 Claude AI 분석 노드</strong></p>
+  <pre><code>Headers에 추가:
+x-api-key: <span style="color:#ff7b72">sk-ant-YOUR_ANTHROPIC_API_KEY</span></code></pre>
+  
+  <p><strong>📤 GitHub PUT 노드</strong></p>
+  <p style="font-size:.9rem">URL 수정:</p>
+  <pre>https://api.github.com/repos/<span style="color:#ff7b72">YOUR_USERNAME</span>/<span style="color:#ff7b72">market-dashboard</span>/contents/data.json</pre>
+  
+  <p style="font-size:.9rem">Headers 수정:</p>
+  <pre>Authorization: token <span style="color:#ff7b72">YOUR_GITHUB_PAT</span></pre>
+
+  <h3>④ SHA 자동 조회 노드 추가 (중요!)</h3>
+  <p style="font-size:.9rem">GitHub API로 파일을 업데이트할 때 현재 파일의 SHA가 필요합니다.<br>
+  <code>📤 GitHub PUT</code> 노드 앞에 <code>HTTP Request</code> 노드를 추가하세요:</p>
+  <pre><code>Method: GET
+URL: https://api.github.com/repos/YOUR_USERNAME/market-dashboard/contents/data.json
+Headers: Authorization: token YOUR_GITHUB_PAT
+
+<span class="comment">// 이후 PUT 노드의 sha 필드에 아래 expression 사용:</span>
+{{ $json.sha }}</code></pre>
+
+  <div class="tip">💡 완성된 워크플로우 흐름: 스케줄러 → GET SHA → Claude 분석 → JSON 파싱 → GitHub PUT</div>
+</div>
+
+<h2>STEP 5 · 워크플로우 테스트 & 활성화</h2>
+<div class="step">
+  <div class="step-num">STEP 05</div>
+  <ol style="padding-left:20px;font-size:.9rem">
+    <li><code>Test workflow</code> 버튼으로 수동 실행</li>
+    <li>각 노드가 녹색(✅)이면 성공</li>
+    <li>GitHub 저장소에서 <code>data.json</code>이 업데이트됐는지 확인</li>
+    <li>GitHub Pages URL에서 대시보드 확인</li>
+    <li>우측 상단 토글로 워크플로우 <strong>Active</strong> 전환</li>
+  </ol>
+  
+  <h3>실행 스케줄</h3>
+  <table>
+    <tr><th>cron</th><th>의미</th></tr>
+    <tr><td><code>0 8 * * 1-5</code></td><td>평일 오전 8시 (KST 기준으로 서버 시간 맞춤)</td></tr>
+    <tr><td><code>0 23 * * 0-4</code></td><td>미국 장 마감 후 (UTC 기준 평일 밤 11시)</td></tr>
+  </table>
+  <div class="warn">⚠️ Zeabur 서버가 UTC 기준이면 KST = UTC+9 를 고려해 cron 시간 조정 필요</div>
+</div>
+
+<h2>완료! 최종 결과</h2>
+<div class="step">
+  <div class="step-num">DONE</div>
+  <table>
+    <tr><th>항목</th><th>내용</th></tr>
+    <tr><td>🌐 웹 주소</td><td><code>https://YOUR_USERNAME.github.io/market-dashboard</code></td></tr>
+    <tr><td>⏰ 업데이트</td><td>매일 오전 8시 자동 (평일)</td></tr>
+    <tr><td>💰 비용</td><td>GitHub Pages 무료 + Claude API 일 약 $0.01~0.05</td></tr>
+    <tr><td>🤖 AI 분석</td><td>Claude Sonnet 4 (Anthropic API)</td></tr>
+  </table>
+</div>
+
+<div style="background:#f6f8fa;border:1px solid #d0d7de;border-radius:10px;padding:16px 20px;margin-top:24px;font-size:.82rem;color:#57606a;line-height:1.7">
+  <strong>⚠️ 법적 면책 조항:</strong> 본 시스템의 분석 및 추천은 투자 참고 목적으로만 제공되며, 특정 종목의 매수·매도를 권유하거나 투자 수익을 보장하지 않습니다. 모든 투자 결정은 본인의 판단과 책임 하에 이루어져야 합니다.
+</div>
+
+</body>
+</html>
